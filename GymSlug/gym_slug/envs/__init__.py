@@ -1,2 +1,8 @@
 from gym_slug.envs.slug_unbreakable import UnbreakableSeaweed
 from gym_slug.envs.slug_breakable import BreakableSeaweed
+from gym_slug.envs.slug_unbreakable2 import UnbreakableSeaweed_Reverse
+from gym_slug.envs.slug_unbreakableB38 import UnbreakableSeaweedB38
+from gym_slug.envs.slug_unbreakableB38Lession import UnbreakableSeaweedB38_FrictionSweep
+from gym_slug.envs.slug_unbreakableLession import UnbreakableSeaweed_FrictionSweep
+
+from gym_slug.envs.slug_unbreakable_IRL import UnbreakableSeaweed_cont
