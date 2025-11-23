@@ -264,8 +264,8 @@ class UnbreakableSeaweed(gym.Env):
         #########################
         
         # action space
-        self.action_space = gym.spaces.Discrete(32) # for all 2^5 possible discrete choices of actions at each step
-
+        # self.action_space = gym.spaces.Discrete(32) # for all 2^5 possible discrete choices of actions at each step
+        self.action_space = gym.spaces.Box(low=0.0, high=1.0, shape=(5,), dtype=np.float32)
         # observation space
         self.x_g_threshold = 1
         self.x_h_threshold = 1
@@ -543,12 +543,12 @@ class UnbreakableSeaweed(gym.Env):
         return self._state
 
 
-    def to_binary(self, num): # return [int(i) for i in tmp]
-        # === Convert to binary value ============================================================================================================================================================================================================
-        tmp = np.binary_repr(num) # e.g., '11001'
-        if len(tmp) < 5:
-            tmp = '0'* (5-len(tmp)) + tmp
-        return [int(i) for i in tmp]
+    # def to_binary(self, num): # return [int(i) for i in tmp]
+    #     # === Convert to binary value ============================================================================================================================================================================================================
+    #     tmp = np.binary_repr(num) # e.g., '11001'
+    #     if len(tmp) < 5:
+    #         tmp = '0'* (5-len(tmp)) + tmp
+    #     return [int(i) for i in tmp]
 
 
     def MuscleActivations_001(self,action):
@@ -572,12 +572,12 @@ class UnbreakableSeaweed(gym.Env):
             self.B6B9B3 = action[1]
             self.B31B32 = action[3]
             self.B7 = action[0]
-        else:    
-            self.B8 = action[0,2]
-            self.B38 = action[0,4]
-            self.B6B9B3 = action[0,1]
-            self.B31B32 = action[0,3]
-            self.B7 = action[0,0]
+        else:    # assumed continuous action array from SAC model.predict(obs)
+            self.B8 = action[2] # CL
+            self.B38 = action[4] # CL
+            self.B6B9B3 = action[1] # CL
+            self.B31B32 = action[3] # CL
+            self.B7 = action[0] # CL
         
         edible = self._state[5]
         
@@ -1268,10 +1268,13 @@ class UnbreakableSeaweed(gym.Env):
         t=np.atleast_2d(np.arange(self.StartingTime,self.EndTime+self.TimeStep,self.TimeStep))
         self.EndTime = self.max_steps*0.05
         end_ind = t.shape[1]
+        import os
+        os.makedirs(B, exist_ok=True)
         
         # motor neurons
         # ================== I2 input
         arr = np.concatenate([t.transpose(),self.B31B32_history[0,:end_ind].reshape(-1,1)], axis = 1)
+        
         np.save(B+'I2_input'+T+'.npy', arr)
         np.savetxt(B+'I2_input'+T+'.csv', arr)
         

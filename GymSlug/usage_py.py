@@ -199,11 +199,13 @@ print('max:{}, min:{}'.format(np.max(rewards), np.min(rewards)))
 plt.figure()
 plt.plot(rewards)
 plt.show()
+plt.savefig("fig1.png")
 
 plt.figure()
 for i in reward_log:
     plt.plot(i)
 plt.show()
+plt.savefig("fig2.png")
 
 expert_avg_reward = np.mean(rewards)
 print('expert_avg_reward = ', expert_avg_reward)
@@ -273,7 +275,8 @@ eval_interval = 500     # @param {type:"integer"}
 
 
 
-from stable_baselines import DQN
+# from stable_baselines import DQN
+from stable_baselines import SAC
 import os
 import gym
 import numpy as np
@@ -353,6 +356,7 @@ class SaveOnBestTrainingRewardCallback(BaseCallback):
         plt.ylabel('Average Return') 
         plt.xlabel('Iterations')
         plt.show()
+        plt.savefig("fig3.png")
 
 
     def _printable_reward_title(self, avg_reward) -> str:
@@ -367,7 +371,7 @@ class SaveOnBestTrainingRewardCallback(BaseCallback):
 
 
 best_reward = 0
-log_dir = '/home/camila/GymSlug-main/GymSlug/bestModel/bestModelBreak'
+log_dir = '/jet/home/clee18/_RL/GymSlugRL/GymSlug/bestModel/bestModelBreak'
 os.makedirs(log_dir, exist_ok=True)
 
 train_env = Monitor(train_env, log_dir)
@@ -375,7 +379,9 @@ train_env = Monitor(train_env, log_dir)
 # Create the callback class obj
 callback = SaveOnBestTrainingRewardCallback(plot_env, eval_env, num_eval_episodes, log_interval=log_interval, eval_interval=eval_interval, log_dir=log_dir)
 # Create DQN model
-model = DQN('MlpPolicy', train_env, prioritized_replay=True, learning_rate=2.5e-4,  verbose=1)
+# model = DQN('MlpPolicy', train_env, prioritized_replay=True, learning_rate=2.5e-4,  verbose=1)
+model = SAC('MlpPolicy', train_env, learning_rate=2.5e-4, verbose=1)
+
 # Train the agent DQN model with callback class as one of the parameters
 model.learn(total_timesteps=num_iterations, callback=callback)
 # plot rewards over time
