@@ -226,7 +226,8 @@ class UnbreakableSeaweed(gym.Env):
                         1,1],
                        dtype=np.float32)
         
-        self.action_space = gym.spaces.Discrete(32)
+        # self.action_space = gym.spaces.Discrete(32) # for all 2^5 possible discrete choices of actions at each step
+        self.action_space = gym.spaces.Box(low=0.0, high=1.0, shape=(5,), dtype=np.float32)
         self.observation_space = gym.spaces.Box(low = -high,
                                                 high = high,
                                                 dtype = np.float32)
@@ -432,29 +433,32 @@ class UnbreakableSeaweed(gym.Env):
         return [int(i) for i in tmp]
     
     def MuscleActivations_001(self,action):
+        # === Set Muscle Activation Curves  ==========================================================================================================================================================================
         if isinstance(action, (int, np.integer)):
+            # make sure to convert all variables in action space to discrete binary variables
             action = self.to_binary(action)
-        if self.preset_inputs == 1:
+        if self.preset_inputs == 1: # TECHNICALLY THIS VALUE WILL NEVER BE 1 SINCE ONLY DEFINED/CALLED ONCE BEFORE CONSTRUCTOR AND SET AS 0
+            # Name action state variables to make calcualtions easier
             self.B8 = action[2]
             self.B38 = action[4]
             self.B6B9B3 = action[1]
             self.B31B32 = action[3]
             self.B7 = action[0]
         
-        #the following code works with the python environment without a tf wrappe
-            
+        # the following code works with the python environment without a tf wrapper --> WHAT DOES THIS MEAN??? --> tf = tensor flow wrapper
+        # takes into consideration all different format types of action variable
         elif isinstance(action, list):
             self.B8 = action[2]
             self.B38 = action[4]
             self.B6B9B3 = action[1]
             self.B31B32 = action[3]
             self.B7 = action[0]
-        else:    
-            self.B8 = action[0,2]
-            self.B38 = action[0,4]
-            self.B6B9B3 = action[0,1]
-            self.B31B32 = action[0,3]
-            self.B7 = action[0,0]
+        else:    # assumed continuous action array from SAC model.predict(obs)
+            self.B8 = action[2] # CL
+            self.B38 = action[4] # CL
+            self.B6B9B3 = action[1] # CL
+            self.B31B32 = action[3] # CL
+            self.B7 = action[0] # CL
         
         edible = self._state[5]
         
